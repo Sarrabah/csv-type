@@ -10,5 +10,3 @@ def is_csv(url: str) -> bool:
     if content_type_arr[0] == "text/csv":
         return True
     return False
-
-#print(is_csv('https://data.opendatasoft.com/api/explore/v2.1/catalog/datasets/prenoms-des-enfants-nes-a-angers@angersloiremetropole/exports/csv'))
