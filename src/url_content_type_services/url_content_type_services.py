@@ -1,9 +1,10 @@
-from abc import ABC
+from abc import ABC, abstractmethod
 from typing import Optional
 import requests
 
 
 class IRequestService(ABC):
+    @abstractmethod
     def get_content_type_from_header(self, url: str) -> Optional[str]:
         ...
 
