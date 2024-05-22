@@ -1,38 +1,32 @@
-from detect_csv_url import CsvDective
-from url_content_type_services.url_content_type_services import ContentTypeReaderServiceInterface
+from typing import Type
+from detect_csv_url import is_csv
+from url_content_type_services.url_content_type_services import IRequestService
 
 
-class TestCsvContentTypeReaderService(ContentTypeReaderServiceInterface):
-    def get_content_type_from_url_header(self, url: str) -> str:
-        content_type = "text/csv; charset=utf-8"
-        return content_type
+def make_test_class(content_type: str) -> Type[IRequestService]:
+
+    class TestTypeReaderService(IRequestService):
+        def get_content_type_from_header(self, url: str) -> str:
+            return content_type
+
+    return TestTypeReaderService
 
 
-class TestNotCsvContentTypeReaderService(ContentTypeReaderServiceInterface):
-    def get_content_type_from_url_header(self, url: str) -> str:
-        content_type = "application/octet-stream"
-        return content_type
-
-
-class TestVoidContentTypeReaderService(ContentTypeReaderServiceInterface):
-    def get_content_type_from_url_header(self, url: str) -> str:
-        content_type = ""
-        return content_type
+TestCsvRequestService = make_test_class("text/csv; charset=utf-8")
+TestNotCsvRequestService = make_test_class("pplication/octet-stream")
+TestVoidRequestService = make_test_class("")
 
 
 def test_csv_url_content_type():
-    all_content_type = TestCsvContentTypeReaderService()
-    content_type = CsvDective(all_content_type)
-    assert content_type.is_csv("https://fakedata.opendatasoft.com/apii/explore/v2.1/catalog/datasets/prenoms-des-enfants-nes-a-angers@angersloiremetropole/exports/csv") is True
+    all_content_type = TestCsvRequestService()
+    assert is_csv("https://fakedata.opendatasoft.com/apii/explore/v2.1/catalog/datasets/prenoms-des-enfants-nes-a-angers@angersloiremetropole/exports/csv", all_content_type) is True
 
 
 def test_not_csv_url_content_type():
-    all_content_type = TestNotCsvContentTypeReaderService()
-    content_type = CsvDective(all_content_type)
-    assert content_type.is_csv("https://fakegitlab.com/validata-table/validata-table/uploads/f0091cba92766b0015fb0015e8c594fc/prenoms-des-enfants-nes-a-angers_angersloiremetropole.csv") is False
+    all_content_type = TestNotCsvRequestService()
+    assert is_csv("https://fakegitlab.com/validata-table/validata-table/uploads/f0091cba92766b0015fb0015e8c594fc/prenoms-des-enfants-nes-a-angers_angersloiremetropole.csv", all_content_type) is False
 
 
 def test_void_url_content_type():
-    all_content_type = TestVoidContentTypeReaderService()
-    content_type = CsvDective(all_content_type)
-    assert content_type.is_csv("https://fakedata.opendatasoft.com/apii/explore/v2.1/catalog/datasets/prenoms-des-enfants-nes-a-angers@angersloiremetropole/exports/csv") is False
+    all_content_type = TestVoidRequestService()
+    assert is_csv("https://fakedata.opendatasoft.com/apii/explore/v2.1/catalog/datasets/prenoms-des-enfants-nes-a-angers@angersloiremetropole/exports/csv", all_content_type) is False
